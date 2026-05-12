@@ -637,20 +637,32 @@ def build_html_from_file(file_name):
 
                     row = g.sum(numeric_only=True)
 
+                    imp = to_number(row.get("노출수", 0))
+                    reach = to_number(row.get("도달수", 0))
+                    click = to_number(row.get("클릭수", 0))
+                    cost = to_number(row.get("광고비", 0))
+                    conv = to_number(row.get("전환수", 0))
+                    revenue = to_number(row.get("매출", 0))
+
+                    ctr_calc = click / imp if imp else 0
+                    cpc_calc = cost / click if click else 0
+                    roas_calc = revenue / cost if cost else 0
+                    cvr_calc = conv / click if click else 0
+
                     html += f"&nbsp;&nbsp;ㄴ <b>{media} / {goal}{' / ' + target if target else ''}</b><br>"
 
                     if "트래픽" in goal:
                         html += (
                             f"&nbsp;&nbsp;&nbsp;&nbsp;- 누적 광고비 {format_won(row['광고비'])} 소진 / "
                             f"노출 {format_korean(row['노출수'])}건, 유입 {format_korean(row['클릭수'])}건 / "
-                            f"CTR {normalize_ctr(row['CTR']) * 100:.2f}% / CPC {int(round(to_number(row['CPC']))):,}원<br>"
+                            f"CTR {ctr_calc * 100:.2f}% / CPC {int(round(cpc_calc)):,}원<br>"
                         )
                     else:
                         html += (
                             f"&nbsp;&nbsp;&nbsp;&nbsp;- 누적 광고비 {format_won(row['광고비'])} 소진 / "
                             f"노출 {format_korean(row['노출수'])}건, 유입 {format_korean(row['클릭수'])}건 / "
                             f"구매 {format_korean(row['전환수'])}건, 매출 {format_won(row['매출'])} / "
-                            f"ROAS {int(round(normalize_roas(row['ROAS']) * 100))}% 형성<br>"
+                            f"ROAS {int(round(roas_calc * 100))}% 형성<br>"
                         )
 
                     exact_key = (
